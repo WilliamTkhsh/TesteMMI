@@ -7,21 +7,19 @@ from datetime import datetime
 
 bp_solicitacao = Blueprint("solicitacao", __name__, template_folder = "views")
 
-@bp_solicitacao.route('/criar', methods=['GET', 'POST'])
+@bp_solicitacao.route('/criar', methods=['POST'])
 @cross_origin()
 def criar():
-    if request.method == 'GET':
-        return render_template("criar_solicitacao.html")
     if request.method == 'POST':
-        cnpj = request.form.get('cnpj')
-        valor_emprestimo = request.form.get('valor_emprestimo')
-        faturamento_anual = request.form.get('faturamento_anual')
-        endereco = request.form.get('endereco')
-        nome = request.form.get('nome')
-        cpf = request.form.get('cpf')
-        telefone = request.form.get('telefone')
-        email = request.form.get('email')
-        
+        json_data = request.get_json()
+        cnpj = json_data['cnpj']
+        valor_emprestimo = json_data['valor_emprestimo']
+        faturamento_anual = json_data['faturamento_anual']
+        endereco = json_data['endereco']
+        nome = json_data['nome']
+        cpf = json_data['cpf']
+        telefone = json_data['telefone']
+        email = json_data['email']
 
         objeto = Solicitacao(cnpj, valor_emprestimo, faturamento_anual, endereco, nome, cpf, telefone, email)
         objeto.data_criada = datetime.now()
@@ -49,6 +47,7 @@ def listarSolicitacoes():
     solicit_json = []
     for solicitacao in solicitacoes:
        solicit_json.append({
+            'id': solicitacao.id,
             'cnpj': solicitacao.cnpj, 
             'valor_emprestimo': solicitacao.valor_emprestimo,
             'faturamento_anual': solicitacao.faturamento_anual,
@@ -61,18 +60,17 @@ def listarSolicitacoes():
         })
     return jsonify(solicit_json)
 
-@bp_solicitacao.route('/editar/<int:id>', methods=['GET', 'POST'])
+@bp_solicitacao.route('/editar/<int:id>', methods=['POST'])
 @cross_origin()
 def editarSolicitacoes(id):
     solicit = Solicitacao.query.get(id)
-    if request.method == 'GET':
-        return render_template('editar_solicitacao.html', solicitacao = solicit)
     if request.method == 'POST':
-        valor_emprestimo = request.form.get('valor_emprestimo')
-        faturamento_anual = request.form.get('faturamento_anual')
-        endereco = request.form.get('endereco')
-        telefone = request.form.get('telefone')
-        email = request.form.get('email')
+        json_data = request.get_json()
+        valor_emprestimo = json_data['valor_emprestimo']
+        faturamento_anual = json_data['faturamento_anual']
+        endereco = json_data['endereco']
+        telefone = json_data['telefone']
+        email = json_data['email']
 
         solicit.valor_emprestimo = valor_emprestimo
         solicit.faturamento_anual = faturamento_anual
@@ -84,6 +82,7 @@ def editarSolicitacoes(id):
         db.session.commit()
 
         solicit_json = {
+            'id': solicit.id,
             'valor_emprestimo': solicit.valor_emprestimo,
             'faturamento_anual': solicit.faturamento_anual,
             'endereco': solicit.endereco, 
