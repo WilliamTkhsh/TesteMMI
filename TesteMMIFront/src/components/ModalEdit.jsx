@@ -75,6 +75,7 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit, atual
                                 type ="number"
                                 name="valor_emprestimo"
                                 defaultValue={dadoEdit.valor_emprestimo}
+                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
@@ -83,6 +84,7 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit, atual
                                 type ="number"
                                 name="faturamento_anual"
                                 defaultValue={dadoEdit.faturamento_anual}
+                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
