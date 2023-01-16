@@ -13,22 +13,40 @@ import {
     Button
   } from '@chakra-ui/react'
 import { useState } from 'react'
+import { validateCNPJ, validateCPF, validateEmail } from "../scripts/validations.js"
+import { InputCNPJ, InputCPF, InputPhone } from "./masks/InputMasks.jsx"
 
-export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
+
+export const ModalComp = ({dados, setDados, isOpen, onClose, atualizarDados}) => {
     const [values, setValues] = useState();
 
-    const handleChangeValues = (value) => {
+    const handleChangeValues = (e) => {
         setValues((prevValue) => ({
             ...prevValue,
-            [value.target.name]: value.target.value,
+            [e.target.name]: e.target.value,
         }));
     };
 
     const handleSubmit = () => {
+        if (!validateCNPJ(values.cnpj)) {
+            alert("O CNPJ é inválido");
+            return;
+        }
+        if (!validateCPF(values.cpf)) {
+            alert("O CPF é inválido");
+            return;
+        }
+        if (!validateEmail(values.email)) {
+            alert("O Email é inválido");
+            return;
+        }
+        let fixed_valor_emprestimo = parseFloat(values.valor_emprestimo).toFixed(2);
+        let fixed_faturamento_anual = parseFloat(values.faturamento_anual).toFixed(2);
+
         let data = {
             cnpj: values.cnpj,
-            valor_emprestimo: values.valor_emprestimo,
-            faturamento_anual: values.faturamento_anual,
+            valor_emprestimo: fixed_valor_emprestimo,
+            faturamento_anual: fixed_faturamento_anual,
             endereco: values.endereco,
             nome: values.nome,
             cpf: values.cpf,
@@ -42,10 +60,8 @@ export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
         })
         .then(response => response.json())
         .then(json => console.log(json))
-        .catch(err => console.log(err));
-
-        const dados_atualizados = dados;
-        setDados(dados_atualizados);
+        .catch(err => console.log(err))
+        .then(() => atualizarDados());
         onClose();
     }
 
@@ -61,15 +77,16 @@ export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
                     <FormControl display="flex" flexDir="column" gap={4}>
                         <Box>
                             <FormLabel>CNPJ</FormLabel>
-                            <Input 
+                            <InputCNPJ 
+                                values={values}
+                                setValues={setValues}
                                 type ="text"
                                 name="cnpj"
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
                             <FormLabel>Valor do Empréstimo</FormLabel>
-                            <Input 
+                            <Input
                                 type ="text"
                                 name="valor_emprestimo"
                                 onChange={handleChangeValues}
@@ -77,7 +94,7 @@ export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
                         </Box>
                         <Box>
                             <FormLabel>Faturamento Anual</FormLabel>
-                            <Input 
+                            <Input
                                 type ="text"
                                 name="faturamento_anual"
                                 onChange={handleChangeValues}
@@ -85,7 +102,7 @@ export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
                         </Box>
                         <Box>
                             <FormLabel>Endereço do Solicitante</FormLabel>
-                            <Input 
+                            <Input
                                 type ="text"
                                 name="endereco"
                                 onChange={handleChangeValues}
@@ -101,18 +118,20 @@ export const ModalComp = ({dados, setDados, isOpen, onClose}) => {
                         </Box>
                         <Box>
                             <FormLabel>CPF do Solicitante</FormLabel>
-                            <Input 
+                            <InputCPF
+                                values={values}
+                                setValues={setValues}
                                 type ="text"
                                 name="cpf"
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
                             <FormLabel>Telefone do Solicitante</FormLabel>
-                            <Input 
+                            <InputPhone
+                                values={values}
+                                setValues={setValues}                           
                                 type ="text"
                                 name="telefone"
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>

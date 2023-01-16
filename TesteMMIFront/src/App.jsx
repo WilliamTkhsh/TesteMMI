@@ -22,18 +22,24 @@ function App() {
   const [dadoEdit, setDadoEdit] = useState()
 
   useEffect(()=>{
-    fetch("http://127.0.0.1:5000/solicitacao/listar")
+    atualizarDados()
+  },[])
+
+  const atualizarDados = () => {
+    fetch("http://127.0.0.1:5000/solicitacao/listar", {
+      method: "GET",
+    }) 
     .then(response => response.json())
-    .then(data => setDados(data))  
-  },[dados])
+    .then((data) => setDados(data))  
+  }
 
   const handleRemove = (id) => {
     fetch("http://127.0.0.1:5000/solicitacao/deletar/" + id, {
-      method: "POST",
+      method: "DELETE",
     })
     .then(response => console.log(response))
     .catch(err => console.log(err))
-    setDados(dados)
+    .then(() => atualizarDados())
   }
 
   return (
@@ -72,8 +78,8 @@ function App() {
               {dados.map((dado,index)=>(
                 <Tr key={index}>
                   <Td>{dado.cnpj}</Td>
-                  <Td>{dado.valor_emprestimo}</Td>
-                  <Td>{dado.faturamento_anual}</Td>
+                  <Td>R$ {dado.valor_emprestimo?.replace(".",",")}</Td>
+                  <Td>R$ {dado.faturamento_anual?.replace(".",",")}</Td>
                   <Td>{dado.data_criada}</Td>
                   <Td p={0}>
                   <Button colorScheme="orange" onClick={() => [onOpenEdit(), setDadoEdit(dado)]}>
@@ -101,6 +107,7 @@ function App() {
           setDados={setDados}
           isOpen={isOpen}
           onClose={onClose}
+          atualizarDados={atualizarDados}
         />
       )}
       {isOpenEdit && (
@@ -109,6 +116,7 @@ function App() {
           setDadoEdit={setDadoEdit}
           isOpenEdit={isOpenEdit}
           onCloseEdit={onCloseEdit}
+          atualizarDados={atualizarDados}
         />
       )}
     </Flex>

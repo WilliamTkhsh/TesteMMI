@@ -4,8 +4,8 @@ class Solicitacao(db.Model):
     __tablename__ = "solicitacao"
     id = db.Column(db.Integer, primary_key = True)
     cnpj = db.Column(db.String)
-    valor_emprestimo = db.Column(db.Integer)
-    faturamento_anual = db.Column(db.Integer)
+    valor_emprestimo = db.Column(db.Numeric(precision=10, scale=2))
+    faturamento_anual = db.Column(db.Numeric(precision=10, scale=2))
     endereco = db.Column(db.String)
     nome = db.Column(db.String)
     cpf = db.Column(db.String)

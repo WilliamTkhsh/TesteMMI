@@ -13,8 +13,11 @@ import {
     Button
   } from '@chakra-ui/react'
 import { useState } from 'react'
+import { validateEmail } from "../scripts/validations.js"
+import { InputPhone } from "./masks/InputMasks.jsx"
 
-export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit}) => {
+export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit, atualizarDados}) => {
+
     const [values, setValues] = useState({
         id: dadoEdit.id,
         valor_emprestimo: dadoEdit.valor_emprestimo,
@@ -32,6 +35,10 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit}) => {
     };
 
     const handleSubmit = () => {
+        if (!validateEmail(values.email)) {
+            alert("O Email é inválido");
+            return;
+        }
         let data = {
             valor_emprestimo: values.valor_emprestimo,
             faturamento_anual: values.faturamento_anual,
@@ -40,16 +47,15 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit}) => {
             email: values.email
         }
         fetch("http://127.0.0.1:5000/solicitacao/editar/" + dadoEdit.id, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify(data),
         headers: {"Content-type": "application/json; charset=UTF-8"}
         })
         .then(response => response.json())
         .then(json => console.log(json))
-        .catch(err => console.log(err));
+        .catch(err => console.log(err))
+        .then(() => atualizarDados())
 
-        const dado_editado = dadoEdit;
-        setDadoEdit(dado_editado);
         onCloseEdit();
     }
 
@@ -65,25 +71,23 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit}) => {
                     <FormControl display="flex" flexDir="column" gap={4}>
                         <Box>
                             <FormLabel>Valor do Empréstimo</FormLabel>
-                            <Input 
-                                type ="text"
+                            <Input
+                                type ="number"
                                 name="valor_emprestimo"
                                 defaultValue={dadoEdit.valor_emprestimo}
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
                             <FormLabel>Faturamento Anual</FormLabel>
                             <Input 
-                                type ="text"
+                                type ="number"
                                 name="faturamento_anual"
                                 defaultValue={dadoEdit.faturamento_anual}
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
                             <FormLabel>Endereço do Solicitante</FormLabel>
-                            <Input 
+                            <Input
                                 type ="text"
                                 name="endereco"
                                 defaultValue={dadoEdit.endereco}
@@ -92,16 +96,17 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit}) => {
                         </Box>
                         <Box>
                             <FormLabel>Telefone do Solicitante</FormLabel>
-                            <Input 
+                            <InputPhone
+                                values={values}
+                                setValues={setValues}
                                 type ="text"
                                 name="telefone"
                                 defaultValue={dadoEdit.telefone}
-                                onChange={handleChangeValues}
                             />
                         </Box>
                         <Box>
                             <FormLabel>Email do Solicitante</FormLabel>
-                            <Input 
+                            <Input
                                 type ="text"
                                 name="email"
                                 defaultValue={dadoEdit.email}
