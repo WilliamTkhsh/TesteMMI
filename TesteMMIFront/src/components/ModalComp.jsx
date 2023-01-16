@@ -18,7 +18,7 @@ import { InputCNPJ, InputCPF, InputPhone } from "./masks/InputMasks.jsx"
 
 
 export const ModalComp = ({dados, setDados, isOpen, onClose, atualizarDados}) => {
-    const [values, setValues] = useState();
+    const [values, setValues] = useState({});
 
     const handleChangeValues = (e) => {
         setValues((prevValue) => ({
@@ -129,7 +129,9 @@ export const ModalComp = ({dados, setDados, isOpen, onClose, atualizarDados}) =>
                             <FormLabel>Telefone do Solicitante</FormLabel>
                             <InputPhone
                                 values={values}
-                                setValues={setValues}                           
+                                setValues={setValues}
+                                edit={false}
+                                phoneEdit=''               
                                 type ="text"
                                 name="telefone"
                             />

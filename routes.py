@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from Models.solicitacaoModel import Solicitacao
 from database import db
-from flask import render_template, request
+from flask import request
 from flask_cors import cross_origin
 from datetime import datetime
 
@@ -22,7 +22,7 @@ def criar():
         email = json_data['email']
 
         objeto = Solicitacao(cnpj, valor_emprestimo, faturamento_anual, endereco, nome, cpf, telefone, email)
-        objeto.data_criada = datetime.now()
+        objeto.data_criada = datetime.now().strftime('%d/%m/%Y')
 
         db.session.add(objeto)
         db.session.commit()
@@ -40,31 +40,32 @@ def criar():
         }
         return solicit_json
 
-@bp_solicitacao.route('/listar')
+@bp_solicitacao.route('/listar', methods= ['GET'])
 @cross_origin()
 def listarSolicitacoes():
     solicitacoes = Solicitacao.query.all()
-    solicit_json = []
-    for solicitacao in solicitacoes:
-       solicit_json.append({
-            'id': solicitacao.id,
-            'cnpj': solicitacao.cnpj, 
-            'valor_emprestimo': solicitacao.valor_emprestimo,
-            'faturamento_anual': solicitacao.faturamento_anual,
-            'endereco': solicitacao.endereco, 
-            'nome': solicitacao.nome,
-            'cpf': solicitacao.cpf,
-            'telefone': solicitacao.telefone, 
-            'email': solicitacao.email,
-            'data_criada': solicitacao.data_criada,
-        })
+    if request.method == 'GET':
+        solicit_json = []
+        for solicitacao in solicitacoes:
+            solicit_json.append({
+                    'id': solicitacao.id,
+                    'cnpj': solicitacao.cnpj, 
+                    'valor_emprestimo': solicitacao.valor_emprestimo,
+                    'faturamento_anual': solicitacao.faturamento_anual,
+                    'endereco': solicitacao.endereco, 
+                    'nome': solicitacao.nome,
+                    'cpf': solicitacao.cpf,
+                    'telefone': solicitacao.telefone, 
+                    'email': solicitacao.email,
+                    'data_criada': solicitacao.data_criada,
+                })
     return jsonify(solicit_json)
 
-@bp_solicitacao.route('/editar/<int:id>', methods=['POST'])
+@bp_solicitacao.route('/editar/<int:id>', methods=['PUT'])
 @cross_origin()
 def editarSolicitacoes(id):
     solicit = Solicitacao.query.get(id)
-    if request.method == 'POST':
+    if request.method == 'PUT':
         json_data = request.get_json()
         valor_emprestimo = json_data['valor_emprestimo']
         faturamento_anual = json_data['faturamento_anual']
@@ -92,11 +93,11 @@ def editarSolicitacoes(id):
 
         return solicit_json
 
-@bp_solicitacao.route('/deletar/<int:id>', methods=['POST'])
+@bp_solicitacao.route('/deletar/<int:id>', methods=['DELETE'])
 @cross_origin()
 def excluirSolicitacao(id):
     solicit = Solicitacao.query.get(id)
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         db.session.delete(solicit)
         db.session.commit()
         return 'Dados Excluídos com sucesso'

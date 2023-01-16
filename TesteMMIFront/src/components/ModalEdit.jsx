@@ -101,7 +101,7 @@ export const ModalEdit = ({dadoEdit, setDadoEdit, isOpenEdit, onCloseEdit, atual
                                 setValues={setValues}
                                 type ="text"
                                 name="telefone"
-                                defaultValue={dadoEdit.telefone}
+                                phoneEdit={dadoEdit.telefone}
                             />
                         </Box>
                         <Box>
